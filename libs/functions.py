@@ -48,7 +48,7 @@ def send_file_request(method,url,params=[],headers=[],hostname="",port=""):
 def send_json_request(method,url,params=[],hostname="",port=""):
     try:
         headers = {'Content-Type': 'application/json'}
-        data = send_request(method,url,params=json.dumps(params),headers=headers,hostname=hostname,port=port)
+        data = send_request(method,url,params=params,headers=headers,hostname=hostname,port=port)
         return data['message']
     except Exception as e:
         return str(e)

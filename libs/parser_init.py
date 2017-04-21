@@ -16,7 +16,7 @@ def init_parser():
     parser_tpls.add_argument("--name","-n",required=False,help="Specify the template's name")
     parser_tpls.add_argument("--dscr","-d",required=False,help="Specify the template's description",default="")
     parser_tpls.add_argument("--file","-f",required=False,help="Template configuration file to use\nInstead of specifying all template's data manually, you can create the configuration template and use it as a reference\n\n")
-    parser_tpls.add_argument("--keyusage","-ku",required=False,help="List of comma-separated Key Usage values to be included in the template. \n\nExample:\ncrlSign, digitalSignature\n\nSupported values are:\n%s" % (" \n".join([" > " + key['value'] for key in config.key_usages]))+"\n\n",default=[])
+    parser_tpls.add_argument("--keyusage","-ku",required=False,help="List of comma-separated Key Usage values to be included in the template. \n\nExample:\ncrlSign, digitalSignature\n\nSupported values are:\n%s" % (" \n".join([" > " + key['value'] for key in config.key_usages]))+"\n\n",default="")
 
     parser_tpls.add_argument("--extkeyusage","-eku",required=False,help="List of comma-separated Extended Key Usage values to be included in the template. \n\nExample:\n crlSign, digitalSignature\n\nSupported values are: \n%s " % ("\n".join([" > " + key['value'] for key in config.ext_key_usages]))+"\n\n",default="")
     parser_tpls.add_argument("--fullcrl","-full",required=False,help="Specify the Distribution Point for Full CRL\nIf not specified, the CRL Distribution Point will be taken from issuing CA configuration\n\n",default="")
@@ -33,12 +33,12 @@ def init_parser():
     parser_users.add_argument("operation",nargs='?',help="The operation to perform on users. Supported operations are: list, create and delete\n\n > list = display a list of created users\n Example: python cli.py user list\n\n > create = create user\n Example: python cli.py create --name 'John Smith' --email 'john.smith@example.com' --country US --organization 'Sunshine Inc.'\n\n > delete = delete specified user(s)\nExample: python cli.py user delete --user_id 5",choices=["list","create","delete"])
     parser_users.add_argument("--name","-n",required=False,help="Specify the user's name\n\n")
     parser_users.add_argument("--email","-e",required=False,help="Specify the user's email\n\n")
-    parser_users.add_argument("--country","-c",required=False,help="Specify the user's country (2-letter index)\nUse 'helper country-list' command to find the index\n\n")
-    parser_users.add_argument("--org","-o",required=False,help="Specify the user's organization\n\n")
-    parser_users.add_argument("--dep","-ou",required=False,help="Specify the user's department\n\n")
-    parser_users.add_argument("--state","-st",required=False,help="Specify the user's state\n\n")
-    parser_users.add_argument("--city","-l",required=False,help="Specify the user's city\n\n")
-    parser_users.add_argument("--user_id","-uid",required=False,help="Specify the user's ID\n\n")
+    parser_users.add_argument("--country","-c",required=False,help="Specify the user's country (2-letter index)\nUse 'helper country-list' command to find the index\n\n",default="")
+    parser_users.add_argument("--org","-o",required=False,help="Specify the user's organization\n\n",default="")
+    parser_users.add_argument("--dep","-ou",required=False,help="Specify the user's department\n\n",default="")
+    parser_users.add_argument("--state","-st",required=False,help="Specify the user's state\n\n",default="")
+    parser_users.add_argument("--city","-l",required=False,help="Specify the user's city\n\n",default="")
+    parser_users.add_argument("--user_id","-uid",required=False,help="Specify the user's ID\n\n",default="")
     parser_users.set_defaults(which='user')
 
     # CA parser

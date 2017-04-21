@@ -32,3 +32,11 @@ http_notimplemented = 501
 error_name_mandatory = "Name is mandatory"
 error_field_mandatory = "Field is mandatory: [ %s ]"
 error_file_notfound = "File [%s] not found"
+error_template_init = "Error while initializing the template"
+
+
+#### URLs
+server_url = "http://%s:%s"
+crl_prefix = "/ca/<ca_id>/crl/full"
+ocsp_prefix = "/ca/<ca_id>/ocsp"
+issuers_prefix = "/ca/<ca_id>/aia"
