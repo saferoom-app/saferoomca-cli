@@ -81,6 +81,8 @@ def init_parser():
     
     parser_certs.add_argument("--user_id","-uid",required=False,help="User's ID\n ",default="")
     
+    #parser_certs.add_argument("--format","-format",required=False,help="The format of public key and P12 structure returned from the server.\nTwo options available:base64 and binary\n\nDefault: base64\n ",default="base64",choices=["base64","binary"])
+   
     parser_certs.add_argument("--pfxpassword","-pf",required=False,help="Password to protect PFX\n ",default="")
     
     parser_certs.add_argument("--valid","-v",required=False,help="Certificate validity in months. Default: 12 months\nIf this value is greater than issuing CA expiration date, then app will use the CA expiration date\n ",default=12)

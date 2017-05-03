@@ -1,3 +1,7 @@
+# Import section
+from libs.print_table import show_item
+import os,ConfigParser,datetime
+
 class User():
 
     def __init__(self):
@@ -47,34 +51,34 @@ class Template():
             if os.path.exists(file) == False:
                 return None
 
+            value = ""
+
             # Initializing config
             config = ConfigParser.RawConfigParser()
             config.read(file)
 
             # Initializing template
-            template = CertificateTemplate()
-            # Getting name and description
+            template = Template()
             template.name = config.get("general","name")
             template.description = config.get("general","dscr")
-            	        
-	        # Getting extensions
-            template.extensions['keylen'] = config.get("keylen","length")
-            template.extensions['altname'] = config.get("general","alt")
+            template.key_length = config.get("keylen","length")
+            template.alt_name = config.get("general","alt")
             value = config.get("key_usages","key_usage")
-            template.extensions['ku'] = ([] if value == "" else value.split(","))
+            template.key_usage = ([] if value == "" else value.split(","))
             value = config.get("key_usages","ext_key_usage")
-            template.extensions['sku'] = ([] if value == "" else value.split(","))
+            template.extended_key_usage = ([] if value == "" else value.split(","))
+            
+            template.full_crl = config.get("crl","full")
+            template.freshest_crl = config.get("crl","freshest")
+            template.inherit_crl = config.get("crl","inherit")
+            template.aia_ocsp = config.get("aia","ocsp")
+            template.aia_issuers = config.get("aia","issuers")
+            template.inherit_aia = config.get("aia","inherit")
             value = config.get("policy","policies")
-            template.extensions['policies'] = ([] if value == "" else value.split(","))
-            template.extensions['altname'] = config.get("general","alt")
-            template.extensions['crl']['inherit'] = config.get("crl","inherit")
-            template.extensions['crl']['full'] = config.get("crl","full")
-            template.extensions['crl']['freshest'] = config.get("crl","freshest")
-            template.extensions['aia']['inherit'] = config.get("aia","inherit")
-            template.extensions['aia']['ocsp'] = config.get("aia","ocsp")
-            template.extensions['aia']['issuers'] = config.get("aia","issuers")
+            template.policies = ([] if value == "" else value.split(","))           
             return template
         except Exception as e:
+            print e
             return None
 
     @staticmethod
@@ -104,6 +108,27 @@ class Template():
     	except Exception as e:
             raise e
 
+    @staticmethod
+    def from_json(json):
+        try:
+            template = Template()
+            template.name = json['name']
+            template.description = json['dscr']
+            template.key_length = json['extensions']['keylen']
+            template.alt_name = json['extensions']['altname']
+            template.key_usage = ",".join(json['extensions']['ku'])
+            template.extended_key_usage = ",".join(json['extensions']['sku'])
+            template.inherit_crl = json['extensions']['crl']['inherit']
+            template.full_crl = json['extensions']['crl']['full']
+            template.freshest_crl = json['extensions']['crl']['freshest']
+            template.inherit_aia = json['extensions']['aia']['inherit']
+            template.aia_ocsp = json['extensions']['aia']['ocsp']
+            template.aia_issuers = json['extensions']['aia']['issuers']
+            template.policies = json['extensions']['policies']
+            return template
+        except Exception as e:
+            raise e
+
     def to_dict(self):
     	return {"name":self.name,"dscr":self.description,\
     	"extensions":{"altname":self.alt_name,"ku":self.key_usage,\
@@ -111,3 +136,52 @@ class Template():
     	"crl":{"inherit":self.inherit_crl,"full":self.full_crl,\
     	"freshest":self.freshest_crl},"aia":{"inherit":self.inherit_aia,\
     	"ocsp":self.aia_ocsp,"issuers":self.aia_issuers},"keylen":self.key_length}}
+
+    ### Method used to print the Template details
+    def print_item(self):
+        return show_item(self)
+
+class CA():
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def from_json(json):
+        try:
+            ca = CA()
+            ca.id = str(json['id'])
+            ca.name = json['name']
+            ca.description = json['dscr']
+            ca.subject_dn = json['subject_dn']  
+            ca.expires = datetime.datetime.fromtimestamp(json['expires']).strftime('%Y-%m-%d %H:%M:%S')
+            ca.cdp = json['extensions']['crl'].replace("<caid>",str(json['id']))
+            ca.ocsp_url = json['extensions']['ocsp'].replace("<caid>",str(json['id']))
+            ca.issuers_url = json['extensions']['issuers'].replace("<caid>",str(json['id']))            
+            return ca
+        except Exception as e:
+            raise e
+
+    ### Method used to print the Template details
+    def print_item(self):
+        return show_item(self)
+
+class Certificate():
+
+    status = {"1":"Active","2":"Revoked","3":"Paused","4":"Revoked"}
+    reasons = {"-1":"","0":"Unspecified","1":"Key Compromise","2":"CA Compromise","3":"Affiliation Changed","4":"Superseeded","5":"Cessation of Operation","6":"Certificate Hold"}
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def parse_items(items):
+        certificates = []
+        for item in items:
+            certificates.append({"id":item['id'],"name":item['name'],\
+                "status":Certificate.status[str(item['status'])],\
+                "code":item['code'],\
+                "reason":item['reason'],\
+                "serial":item['serial']})
+        return certificates
+
