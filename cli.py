@@ -377,4 +377,52 @@ elif option.which == "certificate":
 
 #########################################################
 #                 Helper operations                     #
-######################################################### 
+#########################################################
+
+elif option.which == "helper":
+
+    ### List countries
+    if option.operation == "list-countries":
+        
+        # Opening countries file
+        countries = []
+        with open("countries.json","r") as f:
+            countries = json.loads(f.read())
+        if option.name:
+            print_items([{"code":country['code'],"name":country['name']} for country in countries if option.name in country['name']],sort=False)
+        else:
+            print_items(countries,sort=False)
+
+    ### List revocation reasons
+    elif option.operation == "list-reasons":
+        reasons = config.reasons
+        table = Texttable()
+        table.set_cols_align(["c", "c"])
+        table.set_cols_valign(["m", "m"])
+        table.add_row(["Code", "Reason"])
+        for key in sorted(reasons.keys()):
+            table.add_row([key, reasons[key]])
+        print table.draw()
+        exit()
+
+    ### List all Key Usage values
+    elif option.operation == "list-ku":
+        table = Texttable()
+        table.set_cols_align(["c", "c","c"])
+        table.set_cols_valign(["m", "m","m"])
+        table.add_row(["Value", "Name","Description"])
+        for ku in config.key_usages:
+            table.add_row([ku['value'],ku['name'],ku['dscr']])
+        print table.draw()
+        exit()
+
+    ### List Extended Key Usage values
+    elif option.operation == "list-sku":
+        table = Texttable()
+        table.set_cols_align(["c", "c"])
+        table.set_cols_valign(["m", "m"])
+        table.add_row(["Value", "Name"])
+        for ku in config.ext_key_usages:
+            table.add_row([ku['value'],ku['name']])
+        print table.draw()
+        exit()

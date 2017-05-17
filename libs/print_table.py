@@ -24,7 +24,7 @@ def show_item(item):
     	table.add_row([field.replace("_"," "),item.__dict__[key]])
     return table
 
-def print_items(items):
+def print_items(items,sort=True):
 
 	# Initializing table
 	table = Texttable(max_width=200)
@@ -44,7 +44,10 @@ def print_items(items):
 	table.set_cols_valign(["m"]*length)
 
 	# Reordering the keys
-	keys = sort_keys(items[0].keys())
+	if sort == True:
+	    keys = sort_keys(items[0].keys())
+	else:
+		keys = items[0].keys()
 
 	# Printing the row
 	table.add_row([key.title() for key in keys])
